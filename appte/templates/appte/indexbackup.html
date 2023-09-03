@@ -1,0 +1,44 @@
+<!--
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Adicionar Item</title>
+</head>
+<body>
+    <h1>Adicionar Item</h1>
+    <form id="form-adicionar-item">
+        {% csrf_token %}
+        <input type="text" id="id_nome_item" placeholder="Nome do Item">
+        <button type="submit">Adicionar</button>
+    </form>
+    <div id="mensagem"></div>
+    
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            $('#form-adicionar-item').submit(function (e) {
+                e.preventDefault();
+                const nomeItem = $('#id_nome_item').val();
+                const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+
+                $.ajax({
+                    type: 'POST',
+                    url: '{% url "adicionar_item" %}',
+                    data: JSON.stringify({ 'nome': nomeItem }),
+                    headers: { 'X-CSRFToken': csrftoken }, // Inclui o token CSRF no cabeçalho
+                    contentType: 'application/json',
+                    success: function (data) {
+                        $('#mensagem').text(data.message);
+                        $('#id_nome_item').val(''); // Limpar o campo de entrada
+                    },
+                    error: function (error) {
+                        $('#mensagem').text('Erro ao adicionar o item');
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>
+
+-->

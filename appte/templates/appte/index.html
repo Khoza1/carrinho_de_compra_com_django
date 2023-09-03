@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Carrinho de Compras</title>
+</head>
+<body>
+    <h1>Carrinho de Compras</h1>
+
+    <!-- Lista de produtos -->
+    <ul>
+        {% for produto in produtos %}
+            <li>
+                {{ produto.nome }} - R$ {{ produto.preco }}
+                <a href="#" class="adicionar-ao-carrinho" data-produto-id="{{ produto.id }}">Adicionar</a>
+                <button class="remover-do-carrinho" data-produto-id="{{ produto.id }}">Remover</button>
+            </li>
+        {% endfor %}
+    </ul>
+
+    <div id="mensagem"></div>
+
+    <!-- Formulário fictício com o token CSRF -->
+    <form id="csrf-form">
+        {% csrf_token %}
+    </form>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            $('.adicionar-ao-carrinho').click(function (e) {
+                e.preventDefault();
+
+                const produtoId = $(this).data('produto-id');
+                const csrftoken = $('#csrf-form [name=csrfmiddlewaretoken]').val();
+
+                $.ajax({
+                    type: 'POST',
+                    url: '{% url "adicionar_ao_carrinho" %}',
+                    data: JSON.stringify({ 'produto_id': produtoId }),
+                    headers: { 'X-CSRFToken': csrftoken },
+                    contentType: 'application/json',
+                    success: function (data) {
+                        $('#mensagem').text(data.message);
+                    },
+                    error: function (error) {
+                        $('#mensagem').text('Erro ao adicionar o produto ao carrinho');
+                    }
+                });
+            });
+
+            $('.remover-do-carrinho').click(function (e) {
+                e.preventDefault();
+
+                const produtoId = $(this).data('produto-id');
+                const csrftoken = $('#csrf-form [name=csrfmiddlewaretoken]').val();
+
+                $.ajax({
+                    type: 'POST',
+                    url: '{% url "remover_do_carrinho" %}',
+                    data: JSON.stringify({ 'produto_id': produtoId }),
+                    headers: { 'X-CSRFToken': csrftoken },
+                    contentType: 'application/json',
+                    success: function (data) {
+                        $('#mensagem').text(data.message);
+                    },
+                    error: function (error) {
+                        $('#mensagem').text('Erro ao remover o produto do carrinho');
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>
